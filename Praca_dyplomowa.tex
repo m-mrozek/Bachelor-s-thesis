@@ -1,0 +1,963 @@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Niniejszy plik przedstawia przykładowy skład 
+% pracy dyplomowej na Wydziale Matematyki PWr. 
+% 
+% Autorzy: 
+% Damian Fafuła
+% Michał Kijaczko
+% Jakub Michalczak
+% Maciej Miśta
+% Dagmara Nowak
+% Tomasz Skalski
+% Wojciech Słomian
+%
+%% Data utworzenia: 8.05.2018
+% Numer wersji: 1
+%
+% Poniższą formatkę można rozpowszechniać i edytować 
+% pod warunkiem zachowania numeru wersji, 
+% informacji o autorach i dodaniu informacji 
+% o wprowadzonych zmianach.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Domyślną opcją jest: praca magisterska, język polski.
+% W przypadku pracy pisanej w języku angielskim dodajemy 
+% opcję [english].
+% Dla pracy licencjackiej dodajemy opcję [licencjacka].
+% Dla pracy inżynierskiej dodajemy opcję [inzynierska].
+% Dopuszczalne są podwójne opcje, np. [licencjacka, english].
+% Opcje dodajemy w kwadratowym nawiasie przy \documentclass.
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[licencjacka]{pwr_wmat_praca_dyplomowa}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%              DANE DO PRACY
+%
+% W przypadku pracy dyplomowej w języku angielskim nie jest konieczne 
+% wypełnianie pól: \tytul{}, \kierunek{}, \specjalnosc{}, 
+%                  \streszczenie{}, \slowakluczowe{}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Imię i nazwisko autora
+\autor{Monika Mrozek}
+%
+% Tytuł pracy dyplomowej 
+\tytul{Analiza przeżycia oraz jej zastosowania} 
+\tytulang{Survival analysis and its applications}
+%
+% Tytuł / stopień / imię i nazwisko opiekuna
+\opiekun{Dr hab. inż. Marcin Magdziarz}
+%
+% Kierunek studiów wybieramy spośród następujących:
+% 1) Matematyka
+% 2) Matematyka i Statystyka
+% 3) Matematyka stosowana
+\kierunekstudiow{Matematyka}
+%
+% Kierunek studiów po angielsku wybieramy spośród następujących:
+% 1) Mathematics
+% 2) Mathematics and Statistics
+% 3) Applied Mathematics
+\kierunekstudiowang{Mathematics}
+%
+% Specjalność wybieramy spośród następujących: 
+% KIERUNEK: Matematyka
+% 1) Matematyka teoretyczna,
+% 2) Statystyka matematyczna,
+% 3) Matematyka finansowa i ubezpieczeniowa,
+%
+% KIERUNEK: Matematyka i Statystyka
+% 4) Matematyka,
+% 5) Statystyka i analiza danych, 
+%
+% 6) -- (w przypadku braku specjalizacji).
+\specjalnosc{--} 
+%
+% Specjalność w języku angielskim wybieramy spośród następujących:
+% KIERUNEK: Matematyka
+% 1) Theoretical Mathematics,
+% 2) Mathematical Statistics,
+% 3) Financial and Actuarial Mathematics,
+%
+% KIERUNEK: Matematyka i Statystyka
+% 4) Mathematics,
+% 5) Statistics and Data Analysis,
+%
+% KIERUNEK: Applied Mathematics
+% 6) Financial and Actuarial Mathematics, 
+% 7) Mathematics for Industry and Commerce,
+% 8) Computational Mathematics,
+% 9) Modelling, Simulation and Optimization.
+%
+% 10) -- (w przypadku braku specjalizacji).
+\specjalnoscang{--} 
+%
+% Krótkie streszczenia po polsku i angielsku
+% - nie dłuższe niż 530 znaków.
+\streszczenie{W pracy zaimplementowano różne metody umożliwiające aproksymację prawdopodobieństwa przeżycia. Opracowano podstawowe pojęcia oraz narzędzia statystyczne wykorzystywane podczas analiz, m. in. tablice przeżycia, estymator Kaplana-Meiera oraz logrank test. Ich działanie zostało zweryfikowane dla danych wysymulowanych z różnych rozkładów prawdopodobieństwa oraz empirycznych. Opisano także przykład zastosowania tychże metod podczas badania opłacalności projektu "National Health Service Breast Screening Programme".}
+\streszczenieang{In thesis different methods were implemented which make approximation of survival probability possible. Main terms and statistic tools which are used during analysis were elaborated e.g. life-tables, Kaplan-Meier estimator and logrank test. Their working was checked for data simulated from different probability distributions and for empirical data. The example of application was also descripted during analysing the profitability of project named 'National Health Service Breast Screening Programme'.}
+%
+% Podajemy najważniejsze słowa kluczowe po polsku i angielsku
+% - w obu przypadkach, nie więcej niż 150 znaków.
+\slowakluczowe{analiza przeżycia, tabela przeżycia, wartość cenzurowana, prawdopodobieństwo przeżycia, estymator Kaplana-Meiera, logrank test, funkcja przeżycia}  
+\slowakluczoweang{survival analysis, life-table, censored value, probability of survival, Kaplan-Meier estimator, logrank test, survival function}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definicje, lematy, twierdzenia, przykłady i wnioski
+% Komendy wywołujące twierdzenia, definicje, itd., 
+% czyli 'theorem', 'definition', 'corollary', itd., 
+% można zmienić wedle uznania.
+\theoremstyle{plain}
+\newtheorem{theorem}{Twierdzenie}
+\numberwithin{theorem}{chapter}
+\newtheorem{lemma}[theorem]{Lemat} 
+\newtheorem{corollary}[theorem]{Wniosek}
+\newtheorem{fact}[theorem]{Fakt}
+\theoremstyle{definition}
+\numberwithin{theorem}{chapter}
+\newtheorem{definition}[theorem]{Definicja} 
+\newtheorem{example}[theorem]{Przykład}
+\newtheorem{note}[theorem]{Uwaga}
+
+
+
+\DeclareMathOperator*{\argmax}{argmax}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\frontmatter
+\let\cleardoublepage\clearpage
+
+\maketitle
+\mainmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+{\backmatter \chapter{Wstęp}}
+
+Tematem pracy jest analiza przeżycia oraz jej zastosowania. Opisuje ona metody statystyczne, w których zmienną podstawowego zainteresowania jest czas trwania. Koniec tego przedziału czasowego jest jasno określony i może być wyznaczony przez różne zdarzenia -- awarię urządzenia, wygaśnięcie umowy czy też zwolnienie pracownika. Czasem może być to również śmierć pacjenta -- stąd pochodzenie tego terminu.
+Spektrum zastosowań jest więc szerokie i obejmuje wiele dziedzin, lecz tematyka tej pracy skupia się na wykorzystaniu jej metod w medycynie. 
+
+W rozdziale pierwszym przedstawiono podstawowe pojęcia oraz metody związane z~analizą przeżycia. Wyjaśniono podstawowe terminy takie jak wartości cenzurowane czy zmienne prognostyczne. Następnie opisano jedną z podstawowych metod stosowanych przez statystyków, którą są tabele przeżycia. Są w nich zebrane dane na temat wielu parametrów dotyczących danej populacji takich jak prawdopodobieństwo śmierci, oczekiwana długość życia. Dla lepszego zilustrowania potrzeby korzystania z takich metod podano przykład zastosowania -- dzięki tabelom przeżycia statystykom udało się odpowiedzieć na pytanie, czy opłacalne jest wykonywanie badań przesiewowych w profilaktyce raka piersi.
+
+Funkcja przeżycia to podstawowe narzędzie, które umożliwia przewidywanie oczekiwanej długości życia pacjenta. Estymator Kaplana-Meiera pozwala na jej efektywne przybliżenie co zostało zawarte w kolejnym rozdziale. Dane poddane analizom zostały wysymulowane z~różnych rozkładów za pomocą programu \textit{RStudio}.  W rozdziale tym opisano również jeden z najpopularniejszych testów statystycznych w tej dziedzinie -- logrank test. Dotyczy on ryzyka śmierci~w grupach pacjentów które są przedmiotem zainteresowania statystyków.
+
+Podobne analizy zostały przeprowadzone dla danych rzeczywistych. W tym celu wykorzystano takie same narzędzia jak w przypadku danych symulowanych. Badane populacje pochodziły z trzech grup. Każda z nich była wyodrębniona na podstawie choroby, która dotknęła daną jednostkę -- nowotwór złośliwy płuc, nowotwór złośliwy jelita grubego lub gammapatię monoklonalną o niezidentyfikowanym znaczeniu. Ich wybór nie był przypadkowy; w każdym z tych schorzeń prognozowany czas przeżycia jest całkowicie różny co pozwala na przyjrzenie się problemowi badawczemu z szerszej perspektywy.
+
+
+
+
+
+Wybór takiego tematu podyktowany był moimi zainteresowaniami, którymi są różne zastosowania matematyki -- szczególnie w medycynie. Myślę, że kwestie, które zostaną tu poruszone mogą być kolejnym krokiem w udowodnieniu, że matematyka to nie tylko abstrakcja jak niesłusznie sądzi wiele osób, ale także znacząca pomoc w opisywaniu zjawisk zachodzących w realnym świecie na co dzień. Medycyna i statystyka to na pozór dwie odrębne dziedziny nauki, jednak okazuje się, że istnieje bardzo wiele powiązań między nimi i rozdzielanie ich jest działaniem niepożądanym. Techniki statystyczne umożliwiają zauważenie zależności i prawidłowości w zbiorach danych, które w normalnych warunkach byłyby nie do uchwycenia. Kolejną ich zaletą jest zmniejszanie ryzyka, które ma miejsce w przypadku zastosowania nieodpowiedniego schematu leczenia. W konsekwencji można zapewnić pacjentom leczenie wyższej jakości oraz lepiej zarządzać zasobami, którymi dysponuje służba zdrowia. Gdyby nie statystyka, medycyna rozwijałaby się zdecydowanie wolniej i postęp cywilizacyjny zostałby opóźniony. Uważam, że bez metod analizy przeżycia współczesna medycyna XXI wieku nie ma racji bytu.
+
+
+
+\chapter{Wprowadzenie} 
+
+
+W związku z coraz szybszym rozwojem medycyny, szukamy jak najlepszych narzędzi do opisu przeprowadzonych eksperymentów klinicznych czy też badań, a także chcemy, aby ich wyniki na dużych grupach osób mogły być poddane szczegółowej analizie przede wszystkim dla rozwoju nauki, ale także dla poprawy jakości usług świadczonych przez służbę zdrowia. 
+
+Większość przeprowadzanych eksperymentów medycznych i badań ma na celu dostarczyć nowych informacji na temat  prawidłowości, które można zauważyć w danej populacji. Ich zauważalną zaletą jest wielkość grupy eksperymentalnej -- obserwując za każdym razem pojedynczą jednostkę ich dostrzeżenie wymagałoby zdecydowanie większej spostrzegawczości i wysiłku, a bardzo często nawet byłoby niemożliwe. 
+
+\section{Zarys problemu i podstawowe pojęcia}
+
+Jedną z najbardziej podstawowych zmiennych zainteresowania w analizie danych medycznych bez której ciężko wyobrazić sobie jakiekolwiek badania jest długość życia pacjenta. Dokładniej określając, jest to długość przedziału czasowego, którego koniec jest wyznaczony przez określone zdarzenie -- śmierć z powodu przyczyn naturalnych lub spowodowaną przez chorobę czy też nieudaną operację. Właśnie dlatego \textit{analizą przeżycia} jest nazywana analiza tego typu danych, zebranych na przestrzeni czasu.
+
+Analiza tego typu nie byłaby możliwa bez wykonywania eksperymentów medycznych. Może on dotyczyć leczenia nowotworu złośliwego. Załóżmy, że prognozowana długość życia jest krótka, tzn. rokowania są złe. Wspomnianym wyżej momentem końcowym będzie wtedy śmierć lub remisja choroby. Często brane pod uwagę są także jednostki, które nie osiągnęły punktu końcowego  -- są nadal w trakcie leczenia. Mimo, iż nie wiadomo jak długo może jeszcze żyć pacjent, pewne jest, że czas jego przeżycia musi przekroczyć ten, który upłynął do chwili obecnej; nazywamy go \textit{wartością cenzurowaną}. Wyróżniamy trzy metody, za pomocą których można przeprowadzić procedurę \textit{cenzurowania}, co w konsekwencji prowadzi do wyodrębnienia trzech jego rodzajów: lewego, prawego i przedziałowego \cite{itsa}. Ostatnie z nich ma miejsce wtedy, kiedy wiadomo, że zdarzenie miało miejsce między datą A a B, lecz nie ma informacji na temat tego, kiedy dokładnie. W tejże pracy jest rozważane cenzurowanie prawe, ponieważ zdarzenie następuje po jakimś okresie prowadzonych badań. Lewe definuje się analogicznie do prawego.
+
+
+
+Kolejnym ważnym pojęciem są \textit{zmienne prognostyczne} \cite{smimr}. Mamy z nimi do czynienia gdy liczba zmiennych na początku przeprowadzania eksperymentu oraz to, czy pacjent przeżyje jest silnie związane z tym, jakie przyjmą one wartości. Stosowane metody powinny uwzględniać rozkład zmiennych prognostycznych w badanych grupach oraz współpracować z wartościami cenzurowanymi.  
+
+
+Analiza przeżycia jest również stosowana w badaniu śmiertelności różnych grup zawodowych. Jest to pomocne, gdy chcemy ustalić, czy narażenie na niekorzystny czynnik związany z wykonywaną pracą wpływa na większą umieralność. Na początku eksperymentu wszyscy badani są zdrowi. Następnie obserwowana jest ilość zgonów i porównywana z czasem i przyczyną jego wystąpienia, co umożliwia przeprowadzenie dokładniejszych analiz. 
+
+Bardzo wiele metod analizy opiera się na metodach korzystających z tabel przeżycia. Zostaną one opisane w kolejnym podrozdziale.
+
+\section{Tabele przeżycia}
+
+
+
+
+
+Miejscem, w którym zebranych jest wiele danych na temat długości życia danej grupy osób jest tabela przeżycia. Jest to jedna z najbardziej podstawowych i najstarszych metod statystycznych w dziedzinie analizy przeżycia.
+
+
+
+\begin{definition}[Tabela przeżycia]
+	Tabela, która przedstawia, jakie jest prawdopodobieństwo, że osoba w danym wieku umrze przed swoimi kolejnymi urodzinami (\textit{prawdopodobieństwo śmierci}) jest nazywana \textit{tabelą przeżycia}.
+\end{definition}
+
+
+
+Została wynaleziona przez angielskiego matematyka Edmonda Halley'a, który żył na przełomie XVII i XVIII wieku. Obecnie stanowi podstawę statystyki i wiedzy aktuarialnej. Aby łatwiej porównywać dane dotyczące przeżycia innych grup ludzi stosuje się metodę standaryzacji. Polega ona na grupowaniu zestawu danych ze względu na wiek badanych. Celem tworzenia takich tabel jest ukazanie ich dla danej społeczności, co pomaga w jej dokładniejszej charakterystyce. 
+ 
+Tabele przeżycia mogą być tworzone na różne sposoby. Najpopularniejsze i zarazem najczęściej stosowane są dwa z nich. Tabela uzyskana za pomocą jednego z nich jest nazywana bieżącą, a za pomocą drugiego -- pokoleniową. Obie z tych tabel są identyczne, pod warunkiem, że populacja jest w równowadze i nie zachodzą żadne zmiany w zamieszkiwanym przez nią środowisku. W bieżącej tabeli przeżycia jest przedstawione jak kształtują się parametry związane z~czasem życia przez cały jego okres. Taka tabela zawiera obecne prawdopodobieństwo zgonu dla ludzi w różnym wieku w danym roku. Metody pozwalające je tworzyć są dosyć skomplikowane, lecz stosowane są tylko w biurach ubezpieczeniowych lub do opracowania ważnych danych państwowych. Dla ułatwienia inne, bardziej trywialne rozwiązanie zostało zaproponowane niecałe 10 lat później, w roku 1991.
+
+Aby stworzyć tabelę pokoleniową, również należy zwracać uwagę na pewne obostrzenia. Badani, dla których będzie ona utworzona, muszą być urodzeni we wcześniej określonym przedziale czasowym. Przedstawia się w niej wskaźniki śmiertelności w całym okresie życia pewnej populacji.
+
+Przykładowe dane zostały ukazane w tabeli \ref{tab:t1}. Prawdopodobieństwo, że badany w~danym wieku (oznaczonym przez $x$) umrze przed swoimi kolejnymi urodzinami można znaleźć w drugiej kolumnie. Zmienna zarezerwowana dla tej wartości to $q_x$. Liczbę pacjentów, którzy nadal żyją oznaczamy przez $l_x$ -- jest ona wybrana z 1000 losowo wybranych urodzeń żywych. Wyrażając to w sposób bardziej precyzyjny \cite{smimr}
+\begin{align}
+l_x=l_0 \ p_0 \ p_1\ldots p_{x-1}
+\end{align}
+
+Podane wartości należy oczywiście odczytać z tabeli \ref{tab:t1}. Jedna z nich nie jest podana bezpośrednio, lecz uzyskano ją z prostego wzoru $p_x=1-q_x$. Sprawdzimy to dla najprostszego przypadku, gdy x=1. Dla tej sytuacji $l_1=p_0\ l_0$. Przeprowadzając dokładne obliczenia otrzymujemy:
+$$ l_1=p_0\ l_0=(1-q_0) \ l_0=(1-0.0719) \ 1000=928.1$$
+Zgadza się to z wartością, którą można znaleźć w tabeli.
+
+
+
+
+
+
+
+\begin{table}[ht]
+	\centering
+	\caption{Bieżąca i pokoleniowa tabela przeżycia dla mężczyzn w Anglii i Walii urodzonych w roku 1931 (wersja skrócona)}
+	\label{tab:t1}\
+	\footnotesize\setlength{\tabcolsep}{4pt}
+	\begin{tabular}{l@{\hspace{10pt}} *{11}{c}}
+		\hline
+		\hline
+		 & \multicolumn{3}{c}{Bieżące tabele przeżycia 1930-32} & \multicolumn{1}{c}{$\begin{gathered} \\
+		 	\textrm{Pokoleniowa}\\
+		 	\textrm{tabela przeżycia, 1931} \\ \
+		 	\end{gathered}$} \\
+		\cline{2-7}
+		 $\begin{gathered}
+		\textrm{Wiek}\\
+		\textrm{(w latach)} \\ \
+		x
+		\end{gathered}$ &$\begin{gathered} \\
+		\textrm{Prawodpodobieństwo}\\
+		\textrm{śmierci} \\
+		\textrm{pomiędzy} \
+		\textrm{wiekiem}\\
+		x \
+		\textrm{a} \
+		x+1 \\
+		q_x \\ \\
+		\end{gathered}$
+		&$\begin{gathered}
+		\textrm{Pacjenci,}\\
+		\textrm{którzy} \\
+		\textrm{przeżyli} \\
+		l_x
+		\end{gathered}$& $\begin{gathered}
+		\textrm{Oczekiwana}\\
+		\textrm{długość} \
+		\textrm{życia} \\
+		e_x
+		\end{gathered}$& $\begin{gathered}
+		\textrm{Pacjenci,}\\
+		\textrm{którzy} \\
+		\textrm{przeżyli} \\
+		l_x
+		\end{gathered}$ \\
+		\hline
+		0& 0.0719 & 1000 & 58.7 & 1000 \\
+		1& 0.0153 & 928.1 & 62.2 &927.8\\
+		5&0.0034&900.7&60.1& 903.6 \\
+		10& 0.0015 & 890.2 & 55.8& 894.8 \\
+		20&0.0032 & 872.4 & 46.8 &884.2\\
+		30&0.0034&844.2&38.2&874.1 \\
+		40&0.0056&809.4&29.6 &861.8  \\
+		50&0.0113&747.9&21.6& 829.7 \\
+		60&0.0242&636.2&14.4 &--  \\
+		70&0.0604&433.6&8.6& -- \\
+		80&0.1450&162.0&4.7 &--  \\
+		\hline
+		\hline
+	\end{tabular}
+    \caption*{\textit{Źródło: Statistical methods in medical research, P. Armitage, G. Berry, J.N.S. Matthews \cite{smimr}}}
+\end{table}
+
+
+
+Czwarta kolumna przedstawia wartość $e_x$, która jest średnią długości pewnych przedziałów, które są wyznaczone przez czas życia od momentu osiągnięcia wieku $x$. Jest ona liczona dla wszystkich pacjentów $l_x$, którzy dożyli tego wieku. Patrząc na problem globalnie, tzn. dla całej tabeli, w przybliżeniu można wyliczyć tę wartość ze wzoru:
+\begin{align}
+e_x =( l_{x+1}+l_{x+2}+\ldots )/ l_x + \dfrac{1}{2}
+\end{align}
+
+W nawiasie zliczamy liczbę lat przeżytych przez pacjentów $l_x$ w powyżej określonym przedziale czasowym. Ich zgon nastąpił natychmiast po y-wych urodzinach, przy założeniu, że miał miejsce pomiędzy wiekiem $y$ a $y+1$. Ułamek dopisany na końcu pełni rolę korekty wyniku końcowego, z powodu faktu, iż zgon może nastapić w każdym momencie roku. Niestety jest to dość niedokładne oszacowanie.
+
+Jak wcześniej wspomniano, pokoleniowe tabele przeżycia dotyczą osób, które urodziły się w tym samym czasie -- stąd poniekąd wywodzi się jej nazwa. Można powiedzieć, że analizują dane przyszłościowo, ponieważ dostarczają danych na temat śmiertelności ludzi w~różnym wieku, lecz dopiero dla momentu, kiedy zostałby on osiągnięty. Wartości ukazano w ostatniej kolumnie tabeli \ref{tab:t1}. Rok urodzin badanych obejmuje okres pięciu lat i oscyluje wokół roku 1931. 
+
+Jak można wywnioskować, wartość $l_1$ powinna być zbliżona dla obu rodzajów tabel, ponieważ dane pochodzą z tego samego okresu. Jest wyliczona na podstawie śmiertelności noworodków. Wraz ze wzrostem $x$, zauważa się, że $l_x$ jest większy dla tabeli pokoleniowej tzn. w późniejszym wieku jest większa dysproporcja co do liczby badanych, którzy przeżyli. Jest to spowodowane opieraniem się o wskaźniki śmiertelności dla późniejszych okresów, a jak wiadomo wraz z upływem czasu i postępem cywilizacyjnym, średnia długość życia się wydłuża. Tabela potwierdza również oczywiste fakty -- im badany jest starszy, tym większe prawdopodobieństwo jego śmierci, mniejsza ilość osób, które przeżyły, krótsza oczekiwana długość życia. Prawdopodobieństwo śmierci dla osiemdziesięciolatka jest już dość duże i wynosi 0.1450. Dla porównania w wieku niemowlęcym wynosi 0.0719.
+
+
+Tabele przeżycia używane są nie tylko w demografii i statystyce, ale także w wielu innych dziedzinach. Często są tworzone dla oszacowania opłacalności różnych projektów. Jednym z nich był \textit{National Health Service Breast Screening Programme (NHSBSP)} \cite{bcancer}. Miał na celu pomoc w ocenie, czy wykonywanie badań screeningowych ma sens. Naukowcy poddali badaniom trzy hipoteteczne grupy kobiet. Wszystkie z nich miały 50 lat~i u~żadnej z~nich nie stwierdzono przypadku zachorowania przez ostatnie 35 lat. W pierwszej grupie nie były przeprowadzane żadne badania przesiewowe. Badane z drugiej z nich miały wykonywaną regularnie mammografię co trzy lata począwszy od pięćdziesiątego roku życia, kończąc na sześćdziesiątym dziewiątym. Ostatnia grupa została poddana takiemu samemu schematowi jak druga, lecz z pewną różnicą; otrzymały je tylko te panie, u~których stwierdzono za pomocą metody estymacji większe ryzyko zachorowania. Wszystkie przeprowadzane analizy i badania miały miejsce w okresie od lipca 2016r. do września 2017r.
+
+
+Do przeprowadzenia badania niezbędne było przyjęcie odpowiedniego modelu rozkładu prawdopodobieństwa dla ryzyka zachorowania. Przyjęto wariancję na poziomie $0.43$. Została ona wyliczona na podstawie:
+\begin{itemize}
+	\item średniej wartości wariancji; średnia została wyliczona z przypadków, gdzie odpowiednio statystycy mieli informację lub nie na temat umiejscowienia zmutowanego genu nowotworowego, który odpowiadał za pojawienie się choroby,
+	\item łącznej wariancji, na którą miały wpływ czynniki epidemiologiczne ryzyka, czyli ogół postępowań, które mogą prowadzić do rozwoju danej choroby, oraz  zmutowane geny, których umiejscowienie w genomie było znane.
+\end{itemize}
+
+Przyjęto, że interakcja między czynnikami genetycznymi a epidemiologicznymi ma model log-addytywny. W konsekswencji rozkład prawdopodobieństwa dla ryzyka zachorowania jest lognormalny. Poniżej można znaleźć wzór na jego gęstość.
+\begin{align*}
+f(x) = \left\{\begin{array}{ll}\frac{1}{\sqrt{2\pi}\sigma x} \exp\left(-\frac{(\ln x - \mu)^2}{2\sigma^2} \right), & x> 0 \\ 0, & x\leqslant 0 \end{array} \right.
+\end{align*}
+
+Mając daną średnią i wariancję dla takiego rozkładu można obliczyć wiele parametrów opisujących ten model. Przykładowo dla danego ryzyka można policzyć pozycję percentylową. Jest to procent wyników, który jest powyżej lub poniżej niego patrząc na rozkład częstości. Liczony jest ze wzoru:
+\begin{align}
+\frac{c_{\ell}+0.5f_i}{N}\cdot 100\%
+\end{align}
+ 
+\noindent    gdzie: \\
+$c_{\ell}$ - liczba wyników, które są mniejsze od ustalonego progu \\
+$f_i$ - częstość dla ustalonego progu (wartości) \\
+$N$ - ilość badanych w próbie
+
+Oszacowano jaka część populacji jest posiadaczami genu, który odpowiada za większe ryzyko zachorowania niż ustalony próg oraz ile może pojawić się przypadków ekspresji genu odpowiadającego za rozwój choroby~w obrębie grupy podwyższonego ryzyka.
+
+
+
+
+
+Dla utworzonych wcześniej grup przeprowadzono dokładną analizę kosztów. Użyto w~niej wskaźnika ICER (\textit{incremental cost-effectiveness ratio}). Przedstawia on różnicę~w~średnich kosztach, które generowały grupy. W jednej z nich panie wykonywały regularnie badania przesiewowe, zaś w~drugiej nie korzystały z~tego typu świadczeń medycznych. Podział został wykonany na podstawie średniej QALY (\textit{quality-adjusted life-years}). Jest to jeden ze wskaźników powszechnie stosowanych w analizie przeżycia.
+\begin{definition}[QALY]
+	\textit{QALY} to wskaźnik liczby lat życia ściśle powiązanych z jego jakością. Pomaga analizować skuteczność procedur medycznych stosowanych w ochronie zdrowia.  Wynik jest uzyskiwany poprzez przemnożenie dwóch wartości:
+	\begin{itemize}
+		\item liczby lat, którą przeżyje pacjent dzięki zastosowanemu schematowi leczenia (przykładowo w przypadku 9 lat, będzie wynosić 9)
+		\item liczby z przedziału [0,1], która określa zadowolenie pacjenta z uzyskanej jakości życia w wyniku leczenia; rośnie proporcjonalnie do satysfakcji. Bierze pod uwagę zarówno stan zdrowia, jak i samopoczucie psychiczne.
+	\end{itemize}
+
+Wykres jakości życia od uzyskanego w konsekwencji czasu życia przez pacjenta przedstawiono na rysunku \ref{rys1}.
+
+\begin{figure}[h]
+	\caption*{\textit{Źródło: \url{https://en.wikipedia.org}}}
+	\centering
+	
+	\includegraphics[scale=0.27]{QALY.jpg}
+	\caption{QALY dla grup pacjentów poddanych leczeniu oraz tych, którzy nie otrzymali żadnej pomocy medycznej}\label{rys1}
+	
+\end{figure}
+ 
+
+\end{definition}
+
+
+W celu uzyskania jeszcze większej ilości informacji na temat badanych populacji, zostały dla nich wyliczone wskaźniki QALY.
+
+Trzecia z badanych grup zawierała 99 schematów postępowania w zależności od ryzyka zachorowania; średnia wartość \textit{quality-adjusted life-years} została pomnożona przez odpowiadający mu WTP (\textit{willingness to pay}, w ekonomii jest to maksymalna kwota jaką jest w stanie zapłacić konument za określone dobro lub usługę), który został pomniejszony o koszt całkowity. 
+
+
+
+Ponadto dla każdej grupy kobiet obliczono NMB (\textit{Net Monetary Benefit}). Schemat leczenia z najwyższą jego wartością dla danego WTP był uznawany za najbardziej korzystny, ponieważ za kryterium wyboru uznano wymagane nakłady finansowe.
+
+
+Rezultaty przeprowadzonych badań można odczytać z wykresu \ref{rys2}. Głównym obszarem zainteresowania naukowców były grupa pierwsza i trzecia, dlatego też to one zostały porównane. Odnoszą się do nich wykresy przedstawione za pomocą linii ciągłych. Lewa oś obrazuje narastający koszt w milionach funtów, a prawa -- wzrost wartości wskaźników QALY. Liniami przerywanymi zostały zaznaczone wzrost wysokości kosztów oraz wartości QALY dla drugiej grupy (poddawanej badaniom screeningowym w wieku 50-69 lat); porównane zostały z grupą niewykonującą takich badań. Część populacji, która znajduje się powyżej progu ryzyka obliczamy pomniejszając liczbę sto o ryzyko wyrażone w percentylach dla jego rozkładu prawdopodobieństwa (oś pozioma). Zgodnie z tą regułą przy zerowym nakładzie kosztów cała populacja jest zagrożona, lecz w momencie gdy będą one wynosić około 60 milionów funtów, można założyć, że każdy pacjent przeżyje.
+
+Oczywiście, aby stwierdzić, która ze strategii jest najbardziej efektywna wykonano jeszcze szereg innych analiz. Ostatecznie okazało się, że najbardziej właściwa jest ta, która zakłada wykonywanie badań przesiewowych w zależności od ryzyka zachorowania, a więc ta, której była poddana grupa trzecia. To wszystko nie byłoby możliwe do osiągnięcia, gdyby nie metody opierające się na danych które są zebrane w tabelach przeżycia.
+
+\begin{figure}[!hb]
+	\caption*{\textit{Źródło: \url{https://europepmc.org/articles/PMC6230256}}}
+	\centering
+	
+	\includegraphics[scale=5]{graphtoresearch.jpg}
+	\caption{Wzrost kosztów i wartości QALY dla grupy poddawanej badaniom w~zależności od ryzyka zachorowania w~porównaniu do grupy, która ich nie wykonywała}\label{rys2}
+	
+\end{figure}
+
+%\section{Podrozdział pierwszy}
+
+%\begin{table}[H]
+%\caption{Podstawowa Tabela}
+%\centering
+%\begin{tabular}{ccc}
+%\hline
+%\hline                       
+%Państwo & PKB (w milionach USD )& Stopa bezrobocia  \\  [0.5ex] 
+%\hline 
+%Stany Zjednoczone & 75 278 049 & 4,60\%  \\
+%Chiny & 11 218 281 & 4,10\%   \\
+%Japonia & 4 938 644 & 3,10\%  \\
+%Niemcy & 3 466 639 & 6,00\%   \\
+%Wielka Brytania & 2 629 188 & 4,60\%  \\ [1ex]  
+%\hline 
+%\end{tabular}
+%\caption*{\textit{Źródło: opracowanie własne}}
+%\label{tab:przykladowa2} 
+%\end{table}
+
+%\section{Podrozdział drugi}
+
+
+%Tabela \ref{tab:przykladowa} przedstawia przykładową tabelę. Do tworzenia tabeli służą %m.in. środowiska \texttt{tabular} oraz \texttt{table}. Istnieje możliwość numeracji %dwustopniowej, gdzie pierwsza cyfra oznacza numer rozdziału, a druga – kolejny numer tabeli w tym rozdziale. Tytuł powinien znajdować się centralnie nad tabelą, $12$ pkt odstępu od tekstu zasadniczego nad i pod tabelą wraz z tytułem. Jeśli tabela jest cytowana – należy podać centralnie pod tabelą źródło jej pochodzenia, np. opracowanie własne, opracowano na podstawie danych z GUS.
+%\begin{table}[ht]
+%	\caption{Bieżąca i pokoleniowa tabela przeżycia dla mężczyzn w Anglii i Walii urodzonych w 1931 (wersja skrócona) }
+%	\centering
+%	\begin{tabular}{ccc}
+%		\hline
+%		\hline                       
+%		Wiek & Prawdopodobieństwo \\ śmierci pomiędzy wiekiem x a x+1  $q_x$   & Pacjenci, którzy przeżyli    \\  [0.5ex] 
+%		\hline 
+%		Stany Zjednoczone & 75 278 049 & 4,60\%  \\
+%		Chiny & 11 218 281 & 4,10\%   \\
+%		Japonia & 4 938 644 & 3,10\%  \\
+%		Niemcy & 3 466 639 & 6,00\%   \\
+%		Wielka Brytania & 2 629 188 & 4,60\%  \\ [1ex]  
+%		\hline 
+%	\end{tabular}
+%	\caption*{\textit{Źródło: opracowanie własne}}
+%	\label{tab:przykladowa} 
+%\end{table}
+
+
+%Do cytowania używamy komendy \texttt{cite}. W nawiasie klamrowym podajemy klucz, którego %użyliśmy w pliku \emph{bibliografia.bib}. Przykład: \cite{einstein} lub \cite[chap. %2]{latexcompanion}.
+
+%Rysunki do pracy dyplomowej należy wstawiać w sposób podobny do wstawiania tabel, %z~zasadniczą różnicą polegającą na tym, że podpis powinno umieszczać się centralnie pod %rysunkiem, a nie powyżej niego. Numeracja i sposób cytowania pozostają bez zmian, przy %czym tabele i rysunki nie mają numeracji wspólnej, np. po Tabeli \ref{tab:przykladowa2} %występuje Rysunek \ref{rys1} (o ile jest to pierwszy rysunek rozdziału pierwszego), a nie %Rysunek $1.3$.
+
+%\begin{figure}[ht]
+
+%\centering
+                     
+%\includegraphics[scale=0.27]{logo_w13.jpg}
+%\caption{Podstawowy Rysunek}\label{rys1}
+%\end{figure}
+%\label{rys:przykladowy} 
+
+
+\chapter{Analiza przeżycia - modele, ich własności i estymatory}
+ \section{Estymator Kaplana-Meiera}
+
+Estymator to jeden z najczęstszych terminów używanych w statystyce. Pomaga on dowiedzieć się, jaka jest wartość parametru rozkładu np. w wybranej populacji.  Może być nim przykładowo średnia z próby. Tutaj zostanie opisany estymator stosowany powszechnie w~analizie przeżycia -- estymator Kaplana-Meiera. Jego nazwa pochodzi od nazwisk dwóch naukowców, którzy w 1958 roku opracowali tę metodę estymacji. W omawianym tu przypadku parametrem zainteresowania będzie frakcja pacjentów, którzy w dalszym ciągu żyją. Estymowana zaś zostanie funkcja przeżycia. W literaturze angielskiej można spotkać się również z nazwą \textit{product-limit estimate} \cite{kme}.
+
+W początkowej fazie eksperymentu dane dzieli się na jak najmniejsze przedziały czasowe -- tak małe, jak pozwala na to ich dokładność. Dzięki temu uzyskane rezultaty będą bardziej wiarygodne, niż dla większych odstępów czasowych. Jeżeli obliczenia mają zostać przeprowadzone z~precyzją co do jednego dnia, należy zebrać dane, które nie są mniej dokładne od zażądanej. Długości przedziałów czasowych są przez nie wyznaczone; innymi słowy precyzja co do dnia determinuje jednodniowe przedziały, a co do dwóch dni -- dwudniowe. 
+Jeśli przyjmie się, że w momencie czasowym $t_j$ miało miejsce $d_j$ zgonów oraz, że na krótko przed tym zdarzeniem żyło $n'_j$ pacjentów to przybliżone prawdopodobieństwo śmierci dokładnie w~tym czasie oblicza się ze wzoru \cite{smimr}:
+
+\begin{align}
+q_{t_j}=d_j/n_j'
+\end{align}
+
+Dla większości przedziałów $d_j$=0, co implikuje $q_{t_j}$=0. Prawdopodobieństwo przeżycia $p_{t_j}=1-q_{t_j}$ wynosi wtedy 1. Istnieje jednak możliwość ich pominięcia dzięki zastosowaniu wzoru $l_x=l_0 \ p_0 \ p_1\ldots p_{x-1}$. W konsekwensji przedstawionych tutaj rozważań estymatorem przeżycia w chwili $t$ jest \cite{smimr}: 
+\begin{align}
+l_t=\prod_{j}^{}p_{t_j}=\prod_{j}^{}\frac{n'_j-d_j}{n'_j}
+\end{align}
+
+W produkcie uwzględniane są wszystkie przedziały czasowe, w których nastąpił zgon. Postępowanie trwa aż do chwili mniejszej bądź równej $t$. Co więcej, estymator ten jest estymatorem MLE (\textit{maximum likelihood estimator}). 
+
+
+
+
+\begin{definition}[Estymator największej wiarogodności] 
+	Załóżmy, że $X_1,X_2, \ldots, X_n$ i.i.d. pochodzą z populacji o gęstości (funkcji prawdopodobieństwa) f(x, $\theta$), gdzie $\theta\in \Theta$ jest nieznanym parametrem. Określamy funkcję wiarogodności $$L(\theta)=f(x_1,\theta)\cdot f(x_2,\theta) \cdot \ldots\cdot f(x_n,\theta).$$
+	\textit{Estymator największej wiarogodności} parametru $\theta$ to taka $\hat{\theta}\in \Theta$, dla której $L(\theta)$ osiąga największą wartość, tzn:
+	
+	\[\hat{\theta}=\argmax_{\hat{\theta}\in \Theta} L(\theta)\]
+\end{definition}
+ 
+ Działanie estymatora Kaplana-Meiera najlepiej ilustrują wykresy. Można zastosować go dla danych symulowanych, a także medycznych. 
+ 
+ 
+\section{Estymator Kaplana-Meiera dla danych symulowanych}
+ 
+
+ Symulacja danych będzie się odbywać w oparciu o trzy popularne rozkłady -- wykładniczy, Weibulla oraz Pareto. Badania zostaną przeprowadzone dla 1000 osób, co oznacza, że taki będzie rozmiar rozważanej próby. Do każdego z pacjentów jest przypisany czas przeżycia od jakiegoś charakterystycznego dla niego momentu np. operacji czy zdiagnozowania danej choroby. Oczywiście tak jak wcześniej, stosowany jest proces cenzurowania. Znajduje on zastosowanie, gdy czas badania kończy się przed wystąpieniem określonego zdarzenia, ponieważ w takiej sytuacji nie ma informacji na temat długości przedziału czasowego od zakończenia badania do danego zdarzenia. Oprócz czasu przeżycia każdego badanego, jest dostępna również bazowa informacja -- czy nadal żyje.
+ Inaczej patrząc, przez $P(T>t)$ można oznaczyć prawdopodobieństwo tego, że pacjent będzie żył w dalszym ciągu po chwili $t$, gdzie $T$ jest zmienną losową mierzącą czas życia. 
+ 
+ \begin{figure}[h]
+ 	\caption*{\textit{Źródło: Opracowanie własne}}
+ 	\centering
+ 	\includegraphics[scale=0.88]{kmexp}
+ 	\caption{Estymator Kaplana-Meiera oraz funkcja przeżycia dla rozkładu wykładniczego}\label{rys21}
+ 	
+ \end{figure}
+ W pierwszym przypadku czas przeżycia w latach będzie pochodził z rozkładu wykładniczego z parametrem $\lambda=1/10$ tzn. $exp(1/10)$. Gęstość tego rozkładu jest funkcją ciągłą i jest dana wzorem:
+ \begin{align}
+ f(x) = \left\{\begin{array}{ll}0 & x< 0 \\ \lambda e^{-\lambda x} & x\geqslant 0 \end{array} \right.
+ \end{align}
+  Wartość średnią $ET$ uzyskuje się za pomocą prostego rachunku -- obliczenia całki niewłaściwej: $$ET=\int^{\infty}_{-\infty}tf(t)dt=\int^{\infty}_0 t\lambda e^{-\lambda t}dt= \left[ -e^{-\lambda t}(t+\frac{1}{\lambda}) \right]^{\infty}_0=0-\left( -\frac{1}{\lambda}\right)=
+  \dfrac{1}{\lambda}\overset{\lambda=1/10}{=}10.$$ Wykres estymatora został zaznaczony kolorem czerwonym. W celu sprawdzenia, w jaki działa on sposób, zielonym kolorem przedstawiono wykres $P(T>t)$, czyli funkcji przeżycia. 
+ 
+ Łatwo widać, że w przypadku rozkładu wykładniczego
+ \begin{align}
+ P(T>t)=1-P(T<t)=1-F(t)=e^{-\lambda t}\label{wzor23}
+ \end{align}
+ gdzie $F(t)$ jest dystrybuantą. 
+
+
+ \begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.88]{kmwei}
+	\caption{Estymator Kaplana-Meiera oraz funkcja przeżycia dla rozkładu Weibulla}\label{rys22}
+	
+\end{figure}
+
+ \begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.88]{kmpar}
+	\caption{Estymator Kaplana-Meiera oraz funkcja przeżycia dla rozkładu Pareto}\label{rys23}
+	
+\end{figure}
+Rezultat analizy dla tysiąca obserwacji i opisanego wyżej rozkładu przedstawiono na rysunku \ref{rys21}. Dzięki rachunkom (\ref{wzor23}) widać związek między funkcją przeżycia oraz dystrybuantą. Im więcej obserwacji, tym większe dopasowanie pomiędzy obydwoma wykresami na omawianym rysunku, ponieważ estymator Kaplana-Meiera w~granicy dąży do funkcji przeżycia. Przedział ufności wynosi 95\% i został zaznaczony na wykresie liniami przerywanymi. Analogiczne oznaczenia zostały zastosowane dla kolejnych wykresów.
+
+Kolejnym rozkładem prawdopodobieństwa, z którego zostały wysymulowane dane jest rozkład Weibulla z parametrem kształtu $\alpha>0$ i skali $\beta>0$ o gęstości:
+\begin{align}
+f(x) = \left\{\begin{array}{ll}0 & x< 0 \\ \dfrac{\alpha}{\beta}\left(\dfrac{x}{\beta}\right)^{\alpha-1}exp \left[ -\left( \dfrac{x}{\beta}\right)^\alpha \right]  & x\geqslant 0 \end{array} \right.
+\end{align}
+
+
+Jest to jeden z możliwych wzorów, ponieważ istnieje kilka ich wariantów. W innych źródłach można napotkać na następującą wersję:
+\begin{align}
+f(x) = \left\{\begin{array}{ll}0 & x< 0 \\ \alpha \beta x^{\beta-1}e^{-\alpha t^\beta}  & x\geqslant 0 \end{array} \right.
+\end{align}
+Analogiczna sytuacja ma miejsce przykładowo dla rozkładu $\Gamma(\alpha,\beta)$, gdzie również jest do wyboru kilka wersji wzoru zapisu gęstości. Tutaj jednak zostanie wykorzystany pierwszy z~nich, ponieważ jest częściej stosowany. Kluczową obserwacją jest, że w przypadku rozkładu wykładniczego lata przeżycia były zdecydowanie dłuższe; tutaj dla $\alpha=1$ i~$\beta= 3/2$ prawdopodobieństwo przeżycia zbliża się do zera już w okolicy 8 lat od diagnozy, co można odczytać z wykresu \ref{rys22}. Taki rozkład może być wykorzystywany w modelowaniu przeżycia dla pacjentów chorujacych na niezbyt dobrze rokujące schorzenia np. nowotwór złośliwy płuc.
+
+\newpage Warto sprawdzić, jaką wartość oczekiwaną ma taki rozkład:
+
+$$ET=\int^{\infty}_{-\infty} tf(t)dt=
+\int^{\infty}_0 t \dfrac{\alpha}{\beta}\left(\dfrac{t}{\beta}\right)^{\alpha-1}exp \left[ -\left( \dfrac{t}{\beta}\right)^\alpha \right]dt =
+\Bigg\vert \substack{\left(\frac{t}{\beta}\right)^\alpha=u \\ t=\beta u^{1/\alpha} \\ \frac{\alpha t^{\alpha-1}}{\beta^\alpha}dt=du}\Bigg\vert =$$
+$$ 
+=\int^{\infty}_0 \beta u^{1/\alpha} e^{-u}du=
+\beta \int^{\infty}_0 u^{1/\alpha+1-1} e^{-u} du \overset{(\ast)}{=}
+\beta \Gamma(1+\frac{1}{\alpha})\overset{(\ast \ast)}{=}
+\beta \frac{1}{\alpha} \Gamma(\frac{1}{\alpha})
+\overset{\substack{\alpha=1 \\ \beta=3/2}}{=}
+\frac{3}{2} \cdot 1 = \frac{3}{2}
+  $$
+W przejściu oznaczonym $(\ast)$ zastosowano wzór  $\Gamma(a)=\int^{\infty}_0 u^{a-1}e^{-u}du$, a $(\ast \ast)$ ważną własność funkcji gamma -- $\Gamma(a+1)=a\Gamma(a)$. Wartość oczekiwana wynosząca 3/2 zgadza się z tym co można odczytać z wykresu \ref{rys22}.
+
+Trzecim rozkładem prawdopodobieństwa, dla którego przedstawiono funkcję przeżycia oraz  estymator Kaplana-Meiera jest rozkład Pareto $Pa(k,\alpha)$, przy czym zakładamy, że $\alpha>1$. Efekty analiz zostały ukazane na rysunku \ref{rys23}. Wybrane parametry rozkładu to $k=4, \alpha=3$. \\ W tym przypadku gęstość dla $x>k$ wynosi
+\begin{align}
+f(x) = \dfrac{\alpha k^\alpha}{x^{\alpha+1}} 
+\end{align}
+
+\noindent Zatem:
+$$ ET=\int^{\infty}_{-\infty} tf(t)dt=
+\int^{\infty}_{k} t\dfrac{\alpha k^\alpha}{t^{\alpha+1}}dt=
+\int^{\infty}_{k}\dfrac{\alpha k^\alpha}{t^{\alpha}}dt=
+\alpha k^\alpha \int^{\infty}_{k}\dfrac{1}{t^{\alpha}}dt \overset{(\ast)}{=}
+\alpha k^\alpha \left[\dfrac{t^{-\alpha+1}}{-\alpha+1}\right]^\infty_k=
+$$
+$
+ \ \ \ = \alpha k^\alpha\left(-\dfrac{k^{-\alpha+1}}{-\alpha+1}\right)=
+\dfrac{\alpha k}{\alpha-1}\overset{\substack{k=4 \\ \alpha=3}}{=}
+\dfrac{3 \cdot 4}{2}=6
+$ \\
+W przejściu oznaczonym $(\ast)$ konieczne było założenie, że $\alpha>1$ -- w przeciwnym wypadku całka byłaby rozbieżna i dalsze obliczenia traciłyby sens. Otrzymano więc, że oczekiwana wartość życia wynosi 6 lat, czyli mniej niż w przypadku rozkładu wykładniczego, ale więcej niż dla Weibulla.
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+\section{Logrank test}
+
+Początki historii testowania hipotez sięgają lat trzydziestych ubiegłego wieku. Matematyczna teoria dotycząca tej procedury została wynaleziona przez dwóch znanych statystyków -- Jerzego Neymana i Karla Pearsona \cite{tsh}. Wśród wielu testów statystycznych, logrank test jest tym, który odgrywa ważną rolę w analizie przeżycia, jednakże nie jest jedynym; alternatywą dla niego jest Peto test \cite{kms}.  Logrank test znajduje zastosowanie nie tylko dla dwóch grup danych, ale także dla ich większej ilości. Są one zestawiane w tabelach -- osobno dla każdej z nich. Jej układ można zobaczyć poniżej.
+\begin{table}[ht]
+	\centering
+	\caption{Tabela z danymi (logrank test)}
+	\label{tab:t2}\
+	\normalsize\setlength{\tabcolsep}{4pt}
+	\begin{tabular}{l@{\hspace{10pt}} *{11}{c}}
+		\hline
+		& Liczba zgonów & Liczba pacjentów, którzy przeżyli & Razem \\
+		\hline
+		Grupa A& $d_{jA}$ & $n'_{jA}-d_{jA}$ & $n'_{jA}$  \\
+		Grupa B& $d_{jB}$ & $n'_{jB}-d_{jB}$ & $n'_{jB}$ \\
+		& & & &  \\
+		Razem & $d_{j}$ & $n'_{j}-d_{j}$ & $n'_{j}$ \\
+		\hline
+	\end{tabular}
+	\caption*{\textit{Źródło: Statistical methods in medical research, P. Armitage, G. Berry, J.N.S. Matthews \cite{smimr}}}
+\end{table}
+
+W tabeli \ref{tab:t2} przedstawione zostały dane na temat dwóch grup. Punkt odniesienia to chwila $t_j$ -- liczba zgonów pochodzi właśnie z tego okresu, a ilość pacjentów, którzy przeżyli odnosi się do chwili mającej miejsce tuż przed $t_j$.
+
+Przypuśćmy, że hipoteza zerowa brzmi \textit{ryzyko śmierci jest takie samo w obu grupach}, przy czym hipoteza alternatywna jest zaprzeczeniem zerowej, tzn. dla obu populacji ryzyko jest różne. Przy spełnieniu założeń pierwszej z nich rozkład liczby zgonów powinien spełniać w każdym momencie czasowym poniższe warunki \cite{smimr}
+
+
+\begin{align}
+\left\{\begin{array}{ll} E(d_{jA})=n'_{jA}d_j/n'_j\\ var(d_{jA})=\dfrac{d_j(n'_j-d_j)n'_{jA}n'_{jB}}{{n'_j}^{2}(n'_j-1)}  \end{array} \right.
+\label{eq:23}
+\end{align}
+
+
+Przyjmując $d_j$=1, równania \ref{eq:23} przyjmują prostszą postać:
+
+\begin{align*}
+\left\{\begin{array}{ll} E(d_{jA})=n'_{jA}/n'_j=p'_{jA}\\ var(d_{A})=p'_{jA}(1-p'_{jA})  \end{array} \right.
+\end{align*}
+
+Jak zapisano powyżej, stosunek pacjentów, którzy przeżyli w grupie A oznacza się $p'_{jA}$. Wartość $d_{jA}$ oraz $E(d_{jA})$ są różne, co jest dowodem przeciwko hipotezie zerowej. Kombinację takich różnic, które pojawiały się w różnym czasie nazywamy właśnie logrank test. Jego pierwowzorem był test Mantela-Haenszela. Powstał w 1966 roku i można odnaleźć w nim wiele analogii. Z powodu mnogości przedziałów (sytuacja dyskretna) zachodzą wzory \cite{smimr}
+\begin{align}
+O_A&=\sum d_{jA} \nonumber \\
+E_A&=\sum E(d_{jA}) \\
+V_A&=\sum var(d_{jA}) \nonumber
+\end{align}
+
+
+
+Powyższe sumowania wykonuje się po $t_j$. Ponadto zachodzi równość $E_A+E_B=O_A+O_B$, co można sprawdzić prostym rachunkiem:
+
+\begin{align*}
+E_A+E_B&=O_A+O_B \\ 
+\sum E(d_{jA})+\sum E(d_{jB})&=\sum d_{jA}+\sum d_{jB}  \\
+\sum\frac{n'_{jA}d_j}{n'_j}+\sum\frac{n'_{jB}d_j}{n'_j}&=\sum d_{jA}+\sum d_{jB} \\
+\sum n'_{jA}d_j+\sum n'_{jB}d_j&=\sum d_{jA}n'_j+\sum d_{jB}n'_j \\
+\sum d_j(n'_{jA}+n'_{jB})&=\sum n'_j(d_{jA}+d_{jB})
+\end{align*}
+
+Równanie to jest tożsamościowe, ponieważ $n'_{jA}+n'_{jB}=n'_j$ oraz $d_{jA}+d_{jB}=d_j$.
+Statystyka testowa stosowana do weryfikacji sformułowanej wcześniej hipotezy to \cite{smimr}
+\begin{align}
+\chi^2_1=\dfrac{(O_A-E_A)^2}{V_A}
+\end{align}
+co jest dokładnie rozkładem chi-kwadrat z jednym stopniem swobody ($\chi^2_{(1)}$). Aby uniknąć liczenia wariancji, można skorzystać z równoważnego wzoru:
+\begin{align}
+\chi^2_2=\dfrac{(O_A-E_A)^2}{E_A}+\dfrac{(O_B-E_B)^2}{E_B}
+\end{align}
+Tę statystykę testową można wykorzystać również dla przypadku, gdy liczba grup jest większa od dwóch. W ogólnej sytuacji, gdy mamy k grup, test statystyczny ma $k-1$ stopni swobody; gdy $k=2$ jest to jeden, co zgadza się ze wcześniejszymi rozważaniami. \newline
+Z opisywanym tutaj testem statystycznym nierozłącznie związany jest stosunek ryzyka (j.~ang. \textit{hazard ratio}), Oznaczany jest literą $h$ i wyraża się wzorem \cite{smimr}
+
+\begin{align}
+h=\dfrac{O_A/E_A}{O_B/E_B}
+\label{eq:27}
+\end{align}
+Powyższy iloraz estymuje wskaźnik śmiertelności w grupie A (porównując do grupy B). Ponadto zachodzi
+\begin{align*}
+SE[ln(h)]=\sqrt{\dfrac{1}{E_A}+\dfrac{1}{E_B}}
+\end{align*}
+
+\noindent gdzie $SE$ to błąd standardowy. Kiedy stosunek ryzyka (\ref{eq:27}) nie jest bliski jedności, wtedy przedziały ufności dla błędów standardowych będą miały bardzo mały zakres. Ponadto jest on obciążony.
+
+Logrank test jest testem nieparametrycznym. Testy tego typu są wykorzystywane gdy nie są spełnione założenia o normalności czy też jednorodności (inaczej homogeniczności) wariancji. Drugie z nich oznacza równość wariancji; bardziej obrazowo -- różnorodność danych w każdej z grup jest podobna. Konsekwencją tego jest ich mniejsza moc w~porównaniu do mocy testów parametrycznych. 
+\begin{definition}[Moc testu]
+Prawdopodobieństwo odrzucenia hipotezy zerowej, gdy jest ona fałszywa nazywamy \textit{mocą testu} statystycznego. Innymi słowy, jest to prawdopodobieństwo niepopełnienia błędu drugiego rodzaju. \cite{post}
+\end{definition}
+
+W pozyższej definicji odwołano się do pojęcia błędu występującego podczas testowania hipotez. Jest to jeden z dwóch ich rodzajów.
+
+\begin{definition}[Błąd pierwszego rodzaju]
+	\textit{Błąd pierwszego rodzaju} występuje, gdy odrzucana jest hipoteza zerowa mimo, że jest prawdziwa, przy czym przyjmowana jest hipoteza alternatywna. \cite{ittpos}
+\end{definition}
+
+\begin{definition}[Błąd drugiego rodzaju]
+	\textit{Błąd drugiego rodzaju} występuje, gdy przyjmowana jest hipoteza zerowa mimo, że hipoteza alternatywna jest prawdziwa, przy czym jest ona odrzucana. \cite{ittpos}
+\end{definition}
+
+Zatem moc testu to prawdopodobieństwo tego, że nie zostanie przyjęta hipoteza zerowa, gdy prawdziwa jest hipoteza alternatywna.
+
+
+%Każdy zgon ma taką samą wagę. O teście takim, mówimy, że jest nieważony.
+\section{Logrank test dla danych symulowanych}
+Przypomnijmy, że głównym problemem, który pomaga rozwiązać logrank test jest rozstrzygnięcie, czy krzywe przeżycia dla analizowanych grup pokrywają się. Wynika to z hipotezy zerowej, która jest weryfikowana w tym teście. Zakłada ona, jak wyjaśniono we wcześniejszej części, że prawdopodobieństwo przeżycia nie różni się pomiędzy badanymi grupami.
+
+Tutaj kryterium wyboru, na podstawie którego można łatwo wyodrębnić dwie grupy jest płeć. Oczywiście istnieją także inne możliwości podziału, lecz ten jest jednym~z~najbardziej podstawowych. Test ten wykonano za pomocą funkcji \textit{logrank\_test}, która jest dostępna w~programie \textit{RStudio} po zainstalowaniu paczki \textit{coin}. Funkcja ta zwraca wartość $p$, która jest kluczowa dla wyniku tego eksperymentu. Logrank test wykonano dla rozkładu wykładniczego z parametrem $\lambda=1/10$ , Weibulla z parametrami $\alpha=1 $ i $\beta=3/2 $ oraz Pareto z parametrami $k=4$ i $\alpha=3$.
+
+Dla każdego z powyższych rozkładów w tabeli \ref{tab:t24} przedstawiono odpowiadającą mu wartość $p$. W analizowanym tutaj przypadku poziom istotności $\alpha=0.05$. Przypomnijmy, że hipoteza zerowa brzmi: \textit{Ryzyko śmierci jest takie samo w obu grupach}. Tutaj grupy wyodrębniono ze względu na płeć; została ona również przyporządkowana syntetycznie za pomocą losowania -- każda z nich z prawdopodobieństwem $1/2$.
+
+
+
+\begin{table}[ht]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\caption{Prawdopodobieństwo testowe}
+	\label{tab:t24}\
+	\normalsize\setlength{\tabcolsep}{4pt}
+	\begin{tabular}{l@{\hspace{10pt}} *{11}{c}}
+		\hline
+		& wartość $p$&  \\
+		\hline
+		Rozkład wykładniczy& 0.936 \\
+		Rozkład Weibulla& 0.03057  \\
+		Rozkład Pareto & 0.7113\\
+		
+		\hline
+	\end{tabular}
+	
+\end{table}
+
+
+Aby lepiej zrozumieć działanie tego typu testu, należy najpierw zastanowić się czym jest wartość $p$ (prawdopodonieństwo testowe). Często można spotkać się również z~nazewnictwem anglojęzycznym -- wtedy wartość ta określana jest jako \textit{p-value}. 
+\begin{definition}[Wartość $p$]
+	Wartość prawdopodobieństwa, która sprzyja uzyskaniu danego rezultatu, jeśli hipoteza zerowa jest prawdziwa jest nazywana \textit{wartością $p$}.  \cite{hobs}
+\end{definition}
+
+Alternatywna definicja określa tę wartość jako najmniejszy poziom ufności, przy którym odrzucamy hipotezę zerową na podstawie zaobserwowanej wartości statystyki testowej. W~skrócie, wartość $p$ decyduje o tym, czy hipoteza zerowa zostanie odrzucona. Jeśli $p\leqslant\alpha$ to należy odrzucić $H_0$, zaś gdy $p>\alpha$ to nie ma podstaw do jej odrzucenia.
+
+Zatem w przypadku rozkładu wykładniczego oraz Pareto nie ma podstaw do odrzucenia hipotezy, zaś w przypadku Weibulla należy ją odrzucić.
+
+	
+
+
+
+%Definicje, lematy, twierdzenia, przykłady i wnioski piszemy w pracy tak:
+%\begin{definition}[Martyngał]
+%Tu piszemy treść definicji martyngału.
+%\end{definition}
+
+%\begin{lemma}[]% w nawiasie kwadratowym można napisać jego nazwę
+%Tu piszemy treść lematu.
+%\end{lemma}
+
+\section{Metody parametryczne}
+W naukach statystycznych badających śmiertelność populacji poza metodami nieparametrycznymi takimi jak estymator Kaplana-Meiera czy też logrank test, wyróżnia się także metody parametryczne. Jedno z podejść zakłada stworzenie modelu dla wskaźnika śmiertelności i określenie rozkładu prawdopodobieństwa czasu przeżycia.
+
+Jak zwykle podczas takiego typu eksperymentów w celu usystematyzowania działania tej metody wprowadzono kilka oznaczeń:
+\begin{itemize}
+	\item $\lambda (t)$ (j.ang. \textit{hazard function}) -- funkcja wskaźnika śmietelności od czasu,
+	\item $f(t)$ -- gęstość prawdopodobieństwa czasu przeżycia, 
+	\item $F(t)$ -- dystrybuanta dla rozkładu prawdopodobieństwa czasu przeżycia odpowiadająca gęstości $f(t)$.
+	
+\end{itemize}
+ 
+Powyższe wartości są powiązane ze sobą zależnością \cite{smimr}
+
+\begin{align}
+\lambda (t)=\dfrac{f(t)}{1-F(t)}= f(t)/ S(t) \label{eq:213}
+\end{align}
+
+\noindent gdzie $S(t)=1-F(t)$ jest funkcją przeżycia. Sposób rozwiązywania równania (\ref{eq:213}) polega na obustronnym całkowaniu po $t$.
+Jeśli funkcja wskaźnika śmiertelności od czasu jest stałą, np. $\lambda (t)=\lambda$ dla każdego $t$, to
+
+\begin{align}
+\lambda t = - \ln [S(t)]. \label{eq:214}
+\end{align}
+W wyprowadzeniu wzoru (\ref{eq:214})  wykorzystano fakt, że $F(t)$ jest funkcją pierwotną dla $f(t)$. Po przekształceniu mamy $S(t)=exp(-\lambda t)$. Metodą największej wiarogodności (\textit{maximum likelihood estimation}) można wyestymować $\lambda$, przy czym należy pamiętać, że dane używane do tego celu składają się również z obserwacji cenzurowanych.
+
+Istnieje możliwość przyjęcia innych, bardziej złożonych modeli parametrycznych. Jednym z nich jest model Weibulla dany wzorem \cite{smimr}
+\begin{align}
+\lambda (t)= \alpha \gamma t^{\gamma -1}
+\end{align}
+gdzie $\gamma>1$. Jest to bardzo popularny model, ponieważ odzwierciedla on częstość zapadania na nowotwory złośliwe w zależości od wieku jednostki. Z kolei model Gompetrza \cite{smimr}
+\begin{align}
+\lambda (t)= \alpha exp(\beta t) 
+\end{align}
+jest wykorzystywany w określaniu ryzyka zgonu dorosłych pacjentów na wiele chorób, ponieważ jego przybliżenie jest dość dobre. Ryzyko to rośnie w sposób wykładniczy wraz z wiekiem jednostki.  Wadą tego modelu jest tendencja do jego spadku po upływie jakiejś ilości czasu.
+
+
+\chapter{Analiza danych rzeczywistych}\label{analizadanychrzeczywistych}
+\section{Przygotowanie danych}
+
+Podstawowym procesem umożliwiającym dostrzeżenie zmian, cech czy właściwości jakiegoś obiektu jest obserwacja. Oczywistym jest, że jej wyniki chcemy zachować w jakikolwiek ale też możliwie jak najbardziej precyzyjny sposób. W większości przypadków zapis umożliwiają wartości liczbowe. Te zabrane za pomocą doświadczenia czy też eksperymentu nazywane są danymi empirycznymi. Nie jest ważny tylko fakt ich zebrania ale także ich jakość statystyczna. Warto pamiętać, że istnieje wiele możliwości nieprawidłowości. Może być nią przykładowo pomyłka przy uzupełnianiu rubryk przez osobę za to odpowiedzialną, braki pojedynczych rekordów lub występowanie wartości niemożliwych do osiągnięcia w~normalnych warunkach. Przykładowo gdyby w zestawie danych znaleziono wartość BMI wynoszącą 60, z pewnością poddano by w wątpliwość rzetelność takiej obserwacji.
+
+Istnieją liczne sposoby rozwiązywania problemów, które zostały powyżej wymienione i~nierzadko pojawiają się w trakcie analizy danych rzeczywistych. Gdy do badanego przypisanych jest kilka zmiennych istnieje ryzyko luki w każdej z nich. Jeśli ilość zmiennych nie jest duża, przykładowo brak wartości jednej zmiennej gdy ogółem jest ich znacznie więcej, wystarczy zastąpić rekord ten średnią arytmetyczną wyliczoną z wartości osiągniętych dla całej listy badanych. Gdy mamy do czynienia z obszernymi bazami danych nie wpływa to znacząco na jakość ostatecznych wyników. W przypadku, gdy w obrębie jednego wiersza można zaobserwować wiele luk wtedy należy go usunąć, ponieważ w takim wypadku lepszym rozwiązaniem jest strata niewielkiej ilości danych niż syntetyczne uzyskiwanie dużej ich części.
+
+Ważnym narzędziem statystycznym wykorzystywanym w analizie przeżycia, które zostało opisane w poprzednim rozdziale jest estymator Kaplana-Meiera. Zastosowano go dla różnych rozkładów prawdopodobieństwa, co oznacza, że użyte wartości miały charakter czysto teoretyczny. W przypadku tworzenia takich symulacji warto wykonywać analizy także dla danych empirycznych, aby przetestować skuteczność danej metody statystycznej. 
+
+Dane empiryczne, które zostały wykorzystane do estymacji pozyskałam z pakietu \textit{survival}; znajduje się on w dość popularnym programie statystycznym o nazwie \textit{RStudio}. Dotyczą one chorych na różnorakie schorzenia, które w większości przypadków prowadzą do śmierci pacjenta. 
+
+\section{Analizy dla danych empirycznych -- estymator Kaplana-Meiera}
+
+
+W programie \textit{RStudio} można znaleźć szeroki wachlarz zbiorów danych, na których istnieje możliwość przeprowadzenia różnych analiz statystycznych. W kręgu mojego zainteresowania znalazły się dane dotyczące pacjentów chorujących na nowotwory płuc i jelita grubego,~a~także na gammapatię monoklonalną o nieokreślonym znaczeniu (MGUS). Dzięki temu, że skorzystano z możliwości użycia gotowych danych, nie ma konieczności nanoszenia jakichkolwiek zmian. Gdyby były one pozyskane w tradycyjny sposób (uzupełnianie tabeli na podstawie wyników dla każdego pacjenta), wtedy najpierw należałoby przyjrzeć się wykorzystywanym wynikom; analizy wykonane na nieprawidłowych danych nie mają żadnej wartości statystycznej.
+
+
+W pierwszej kolejności estymowanie przeprowadzono dla chorych na nowotwór złośliwy płuc. Przeżywalność nie jest duża i waha się w zależności od jego rodzaju. Dokładniejsze obserwacje można odczytać z rysunku \ref{rys31}.
+ \begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.88]{kmlung}
+	\caption{Estymator Kaplana-Meiera dla pacjentów z grupy klinicznej \textit{North Central Cancer Treatment} chorych na zaawansowany nowotwór płuc }\label{rys31}
+	
+\end{figure}
+
+
+\begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.88]{kmcolon}
+	\caption{Estymator Kaplana-Meiera dla pierwszych pacjentów leczonych chemioterapią uzupełniającą z powodu nowotworu jelita grubego }\label{rys32}
+	
+\end{figure}
+
+
+\begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.88]{kmmgus}
+	\caption{Estymator Kaplana-Meiera dla pacjentów chorych na gammapatię monoklonalną o niezidentyfikowanym znaczeniu (MGUS)}\label{rys33}
+	
+\end{figure}
+
+
+\begin{table}
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\caption{Prawdopodobieństwo testowe}
+	\label{tab:t31}\
+	\normalsize\setlength{\tabcolsep}{4pt}
+	\begin{tabular}{l@{\hspace{10pt}} *{11}{c}}
+		\hline
+		& wartość $p$ &  \\
+		\hline
+		Nowotwór płuc& 0.001 \\
+		Nowotwór jelita grubego& 0.611 \\
+		Gammapatia monoklonalna o niezidentyfikowanym znaczeniu&  0.01168\\
+		
+		\hline
+	\end{tabular}
+	
+\end{table}
+
+
+\begin{figure}[h]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.75]{sclungs}
+	\caption{Krzywe przeżycia dla pacjentów chorych na nowotwór złośliwy płuc -- podział ze względu na płeć}\label{rys34}
+	
+\end{figure}
+
+
+
+Prawdopodobieństwo przeżycia jest bliskie zeru już po upływie 2.5 roku. Sytuacja wygląda inaczej w przypadku chorych na nowotwór jelita grubego leczonych chemioterapią wspomagającą. Na podstawie rysunku \ref{rys32} można sądzić, że w wypadku zachorowania istnieje aż 50\% szans na to, że badany przeżyje ponad 8 lat od momentu postawienia diagnozy.
+
+
+
+
+
+
+
+
+
+
+Gammapatia monoklonalna o niezidentyfikowanym znaczeniu (MGUS) jest to choroba, która często prowadzi do rozwoju szpiczaka mnogiego. Organizm chorych na MGUS wytwarza nieprawidłowe białka nazywane paraproteinami. Rokowania jednak napawają optymizmem -- aż 40\% badanych żyje ok. 15 lat od momentu postawienia diagnozy (wykres \ref{rys33}).
+
+
+
+\section{Analizy dla danych empirycznych -- logrank test}
+Jak wynika z przeprowadzonych dotychczas badań i zebranych danych medycznych, nowotwór złośliwy płuc dotyka znacznie częściej mężczyzn niż kobiety. Analogiczne zjawisko można zaobserwować w~
+przypadku gamapatii monoklonalnej o niezidentyfikowanym znaczeniu. Co więcej, analizy statystyczne również skłaniają się ku postawieniu takiej hipotezy.
+
+
+
+Podczas przeprowadzania testu ważne jest ustalenie poziomu istotności $\alpha$. Tutaj będzie on wynosił $0.05$; takie jest też domyślne ustawienie programu \textit{RStudio}. Wartość $p$ może należeć do dwóch przedziałów, które są wyznaczane poprzez wartość poziomu istotności.
+
+
+Przypomnijmy, że dla testu logrank hipoteza zerowa brzmi: \textit{Ryzyko śmierci jest takie samo w obu grupach}. W przypadku tych dwóch wymienionych na początku podrozdziału chorób wartość $p$ jest bardzo mała i~ostro mniejsza od poziomu istotności $\alpha$ co wymusza odrzucenie tej hipotezy. Oznacza to więc, że płeć ma wpływ na prawdopodobieństwo zgonu. Sytuacja wygląda inaczej w~przypadku nowotworu złośliwego jelita grubego, ponieważ wartość $p$ jest bardzo duża i wynosi $0.611$ co implikuje brak podstaw do odrzucenia hipotezy. Wyniki potrzebne do przeprowadzonych powyżej analiz zebrano w tabeli \ref{tab:t31}.
+
+
+
+
+
+
+
+
+\begin{figure}[!b]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.75]{sccolons}
+	\caption{Krzywe przeżycia dla pacjentów chorych na nowotwór złośliwy jelita grubego leczonych chemioterapią wspomagającą  -- podział ze względu na płeć}\label{rys35}
+	
+	
+	
+\end{figure}
+
+
+
+
+\begin{figure}[!tb]
+	\caption*{\textit{Źródło: Opracowanie własne}}
+	\centering
+	\includegraphics[scale=0.7]{scmguss}
+	\caption{Krzywe przeżycia dla pacjentów chorych na gammapatię monoklonalną o~niezidentyfikowanym znaczeniu -- podział ze względu na płeć}\label{rys36}
+	
+\end{figure}
+
+Dla jeszcze lepszego zobrazowania sytuacji dodatkowo wyestymujemy krzywe przeżycia przy podziale na grupy. Dla wykorzystywanych tutaj danych najlepszym i najbardziej klarownym kryterium wyboru jest płeć.
+
+Wykres dla chorych na nowotwór złośliwy płuc przedstawiono na rysunku \ref{rys34}. Cyfrą 1 oznaczono grupę mężczyzn, zaś cyfrą 2 -- kobiet. Można zauważyć, że szybkość spadku wartości funkcji przeżycia dla kobiet jest wolniejsza. Ponadto osiąga ona większe wartości. Jest to konsekwencją wyższej przeżywalności w grupie przez nie wyodrębnionej i zgadza się z powszechnie dostępną obecnie wiedzą medyczną -- mężczyźni bowiem w wyniku tej choroby umierają zdecydowanie częściej.
+
+Na wykresie \ref{rys35} widać rezultaty analogicznej analizy dla chorych na nowotwór złośliwy jelita grubego leczonych chemioterapią wspomagającą. Nie widać tam znaczącego wpływu płci na prawdopodobieństwo zgonu. Taki wniosek nie powinien dziwić, ponieważ wynik testu logrank na poziomie większym od $\alpha$ implikował brak podstaw do odrzucenia hipotezy na temat takiego samego ryzyka śmierci w obu grupach.
+
+Ostatni rysunek dotyczy chorych na gammapatię monoklonalną o niezidentyfikowanym znaczeniu.  Nie jest to schorzenie szybko postępujące. Prawdopodobieństwo przeżycia wynosi zero dopiero po około 40 latach od momentu zdiagnozowania danej jednostki. Jednak w przypadku, gdy zostaną wyestymowane funkcje przeżycia z podziałem ze względu na płeć, jest widoczna wyraźna rozbieżność (rysunek \ref{rys36}). Tutaj kolor niebieski oznacza mężczyzn, a czerwony -- kobiety. Okazuje się, że prognoza przeżycia jest różna dla każdej z~grup. Linia koloru czerwonego jest wyraźnie powyżej linii koloru niebieskiego, co oznacza, że ponownie prawdopodobieństwo przeżycia w przypadku kobiet jest wyższe. Ponadto ta tendencja utrzymuje się przez cały okres trwania choroby.
+
+
+
+
+
+{\backmatter \chapter{Podsumowanie}}
+
+Metody analizy przeżycia pozwalają na obserwację jednostek danej populacji z bardzo szerokiej perspektywy. Można powiedzieć, że w pewien sposób systematyzują dane medyczne, ponieważ dzięki analizom pozyskuje się różnego rodzaju wnioski i przedstawia je w~zwartej formie -- wykresów, tabel czy obliczonych wartości wskaźników.
+
+
+Tablice trwania życia powstały na początku prób oszacowania prawdopodobieństwa przeżycia -- z tego też powodu jest to metoda dość przestarzała i obecnie rzadko wykorzystywana. Narzuca także pewne ograniczenia -- przykładowo w pokoleniowej tablicy przeżycia badani muszą być urodzeni w danym przedziale czasowym. 
+
+Zdecydowanie lepszą metodą jest estymator Kaplana-Meiera. Daje on statystykom obraz funkcji przeżycia, która pozwala przewidzieć prawdopodobieństwo śmierci jednostki. Ponadto w doskonały sposób pozwala na  wykorzystywanie obserwacji uciętych, ponieważ prawdopodobieństwo przeżycia jest liczone za pomocą iloczynu prawdopodobieństw dla kolejnych przedziałów czasowych. Myślę, że to dobrze rokujące na przyszłość narzędzie statystyczne; prawdopodobieństwo przeżycia wydaje się być bardzo interesującym parametrem dla naukowców różnych dziedzin. Co więcej, jeszcze nie tak dawno (około 60 lat temu), żaden statystyk nie miał go do dyspozycji, co niewątpliwie było bardzo ograniczające dla wyników eksperymentów. Ponadto estymator ten stwarza możliwość prognozowania funkcji przeżycia w grupach.
+
+W analizie przeżycia wykorzystywane są również metody parametryczne, które mają na celu dopasowanie rozkładu czasu trwania życia do znanych rozkładów prawdopodobieństwa, m. in. wykładniczego czy też Weibulla, co zostało dokładniej opisane w jednym~z~podrozdziałów. Niestety wadą metod parametrycznych jest czasem problem z wybraniem odpowiedniego modelu; istnieją przypadki w których nie istnieje możliwość podparcia się żadną teorią.
+
+Test logrank jest testem nieparametrycznym. Czasem nazywany jest testem Mantela-Coxa. Wykonuje się go przy podziale na grupy ze względu na ustalone kryterium wyboru. Test ten porównuje funkcje przeżycia w tych grupach. Dzięki temu można stwierdzić, czy ryzyko śmierci jest takie samo w obrębie każdej z nich. Przeprowadzone za jego pomocą analizy prawidłowo doprowadziły do wniosku, że w przypadku nowotworu złośliwego płuc oraz gammapatii monoklonalnej o niezidentyfikowanym znaczeniu większe ryzyko śmierci ma miejsce w grupie mężczyzn.
+
+W części badawczej pracy sprawdzono działanie tych metod dla danych teoretycznych pochodzących z rozkładów prawdopodobieństwa oraz dla danych empirycznych pozyskanych dzięki obserwacjom populacji chorych. Łatwo zauważyć, że działają one w~pożądany sposób. Estymator Kaplana-Meiera z dużą dokładnością prognozuje funkcję przeżycia, zaś logrank test prawidłowo ocenia ryzyko śmierci spowodowanej przez wybraną chorobę przy podziale na grupy. 
+
+
+
+
+
+%{\backmatter \chapter{Dodatek}}
+%Dodatek w pracach matematycznych również nie jest wymagany. Można w nim przedstawić np. jakiś dłuższy dowód, który z pewnych przyczyn pominęliśmy we właściwej części pracy lub (np. w przypadku prac statystycznych) umieścić dane, które analizowaliśmy.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAFIA
+% W tworzeniu bibliografii najlepiej korzystać z BibTex'a, 
+% który jest częścią systemu Tex. W naszym przypadku funkcję 
+% przechowalni literatury, do której się odwołujemy, pełni 
+% plik bibliografia.bib. Nie musimy ręcznie dodawać nowych 
+% pozycji do bibliografii. Możemy wejść np. na stronę 
+% https://mathscinet.ams.org/mathscinet/index.html, 
+% znaleźć odpowiednią pozycję, wybrać ją, a następnie zmienić 
+% 'Select alternative format' na BibTeX, skopiować uzyskany 
+% tekst, wkleić do pliku bibliografia.bib i skompilować. 
+% Gotowe informacje do pliku bibliografia.bib można znaleźć 
+% także na https://arxiv.org - gdy znajdziemy interesującą nas 
+% pracę, szukamy 'References & Citations' i klikamy 'NASA ADS', 
+% a potem 'Bibtex entry for this abstract' 
+% i postępujemy tak jak wcześniej.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+% w nawiasie klamrowym wpisujemy nazwę pliku z bibliografią w formacie .bib
+\bibliografia{bibliografia} 
+
+\begin{thebibliography}{99}
+	\bibitem{smimr} P. Armitage, G. Berry, J.N.S. Matthews:
+	\emph{Statistical Methods in Medical Research},
+	Blackwell Science, rozdział 17, 2002r.
+	\bibitem{bcancer} Nora Pashayan, Steve Morris, Fiona J. Gilbert, Paul D. P. Pharoah:
+	\emph{Cost-effectiveness and Benefit-to-Harm Ratio of Risk-Stratified Screening for Breast Cancer (A Life-Table Model)}, JAMA Oncology, 2018r. \url{https://europepmc.org/articles/PMC6230256}
+	\bibitem{tsh} E. L. Lehmann, G. Casella, S. Fienberg, I. Olkin:
+	\emph{Testing Statistical Hipotheses}, Springer Texts in Statistics, 1986r.
+	\bibitem{kme} Manish Kumar Goel, Pardeep Khanna, and Jugal Kishore:
+	\emph{Understanding survival analysis: Kaplan-Meier estimate}, International Journal of Ayurveda Research, 2010r.
+	\bibitem{kms} David G. Kleinbaum:
+	\emph{Kaplan-Meier Survival Curves and the Log-Rank Test}, Springer, 1996r.
+	\bibitem{itsa} Mark Stevenson:
+	\emph{An Introduction to Survival Analysis}, EpiCentre, IVABS, Massey University, 2007r.
+	\bibitem{post} Smita Skrivanek:
+	\emph{Power of Statistical  Test}, MoreSteam, LLC, 2009r.
+	\url{https://media.moresteam.com/main/downloads/power-stat-test.pdf}
+	\bibitem{hobs} John H. Mcdonald:
+	\emph{Handbook of biological statistics}, Sparky House Publishing, University of Delaware, Baltimore, Maryland, U.S.A., 2014r.
+	\bibitem{ittpos} David S. Moore, George P. McCabe, Bruce A. Craig:
+	\emph{Introduction to the Practice of Statistics}, W. H. Freeman and Company	New York, Purdue University, 2009r.
+	
+\end{thebibliography}
+
+\end{document}
